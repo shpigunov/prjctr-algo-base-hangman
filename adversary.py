@@ -6,9 +6,10 @@ to the game's word list and other parameters.
 """
 
 import numpy as np
-
 import random
+
 import game
+import functions
 
 
 def adv0(game):
@@ -56,5 +57,30 @@ def adv1(game, play_results='play3.csv', threshold=0):
 
     return np.random.choice(words, 1, p=probabilities)[0]
         
-        
+
+def adv2(game, play_results='play3.csv', selection=10):
     
+    # Build scorecard from csv
+    f = open('play3.csv', 'r')
+    scorecard = {}
+    for line in f.readlines():
+        word, difficulty = line.split(',')
+        scorecard[word.lower()] = int(difficulty)
+    f.close()
+    
+    # Calculate letter 'difficulty' from scorecard
+    d = functions.calculate_letter_difficulty(scorecard)
+    
+    # Make a selection of specified size
+    selection = [random.choice(game.word_list) for i in range(0, selection)]
+    
+    # Pick most difficult word from selection
+    word = ''
+    difficulty = 0
+    for w in selection:
+        word_diff = functions.assess_word_difficulty(w, d)
+        if word_diff > difficulty:
+            difficulty = word_diff
+            word = w
+
+    return word

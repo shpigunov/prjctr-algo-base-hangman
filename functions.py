@@ -196,6 +196,17 @@ def assess_word_difficulty(word, dic) -> int:
     return sum([dic[c] for c in word]) / len(word)
 
 
+def build_scorecard(filename) -> dict:
+    
+    f = open('play3.csv', 'r')
+    scorecard = {}
+    for line in f.readlines():
+        word, difficulty = line.split(',')
+        scorecard[word.lower()] = int(difficulty)
+    f.close()
+    
+    return scorecard
+
 def print_frequency_histogram(words):
     h = build_letter_histogram(words)
     f = calculate_frequency_histogram(h)
