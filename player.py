@@ -90,6 +90,40 @@ def play3(game):
         if '*' not in game.word_mask:
             break
 
+
+def play4(game):
+    """Word list bisect-based player using correct & incorrect letters"""
+    
+    letter_inventory = [chr(x) for x in range(97, 123)]
+    
+    # Filter word pool by (empty) mask
+    word_pool = functions.filter_words_by_mask(
+                                    words=game.word_list,
+                                    mask=game.word_mask)
+    
+    while game.num_attempts < game.max_attempts:
+        
+        # Since each correct guess updates the mask, rebuild letter frequency histogram & queue
+        histogram = functions.build_letter_histogram(word_pool)
+        queue = [c for c in functions.build_letter_queue(histogram) if c in letter_inventory]
+        
+        c = queue.pop(0)
+        letter_inventory.remove(c)
+        success = game.process_guess(c)
+        
+        # Filter word candidate pool based on guess result:
+        if success:
+            # Re-filter by updated mask
+            word_pool = functions.filter_words_by_mask(
+                                    words=game.word_list,
+                                    mask=game.word_mask)
+        else:
+            # Re-filter by incorrect letter
+            word_pool = [w for w in word_pool if c not in w]
+        
+        if '*' not in game.word_mask:
+            break
+            
             
 def play9(game):
     """n-gram based computer player

@@ -59,7 +59,7 @@ def filter_words_by_mask(words: list, mask: str) -> list:
     return res
 
 
-def calculate_frequency_histogram(histogram):
+def calculate_frequency_histogram(histogram) -> dict:
     res = {}
 
     for key in histogram.keys():
@@ -127,7 +127,7 @@ def build_ngram_histogram(words, n=1, include_total=False) -> dict:
     return histogram
 
 
-def build_letter_queue(histogram):
+def build_letter_queue(histogram) -> list:
     queue = []
 
     for key, value in sorted(histogram.items(), key=lambda x: x[1]):
@@ -156,10 +156,44 @@ def build_ngram_histogram(words, n=1, include_total=False) -> dict:
     return histogram
 
 
-
-def assess_word_difficulty(word) -> int:
+def calculate_letter_difficulty(word_dict) -> dict:
+    """Calculate letter difficulty map"""
+    
+    letter_diff = {}
+    letter_freq = {}
+    weighted_letter_diff = {}
+    
+    # Since we observe that the shorter the word is, 
+    # the harder it's to guess,
+    # letter difficulty is reverse to word length
+    
+    for word in word_dict.keys():
+        avg_letter_diff = int(word_dict[word]) * len(word)
+        
+        # Assuming that "difficult" letters show up 
+        # more often in difficult words
+        for c in word:
+            # Count summary difficulty
+            if c not in letter_diff:
+                letter_diff[c] = avg_letter_diff
+            else:
+                letter_diff[c] += avg_letter_diff
+            
+            # Count letter occurrence
+            if c not in letter_freq:
+                letter_freq[c] = 1
+            else:
+                letter_freq[c] += 1          
+    
+    for c in letter_diff.keys():
+        weighted_letter_diff[c] = letter_diff[c] / letter_freq[c]
+    
+    return weighted_letter_diff
+        
+        
+def assess_word_difficulty(word, dic) -> int:
     """Evaluate word difficulty level"""
-    pass
+    return sum([dic[c] for c in word]) / len(word)
 
 
 def print_frequency_histogram(words):

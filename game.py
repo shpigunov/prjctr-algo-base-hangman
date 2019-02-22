@@ -61,4 +61,10 @@ class Game(object):
                 print("Incorrect. Attempts left: %s" % str(self.max_attempts - self.num_attempts))
         if '*' not in self.word_mask:
             self.player_score += 1
+        
+        # Return bool value to inform player of successful/failed guess
+        if letters_guessed > 0:
+            return True
+        else:
+            return False
 
